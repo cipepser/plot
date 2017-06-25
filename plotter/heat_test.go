@@ -5,21 +5,26 @@
 package plotter
 
 import (
+	"fmt"
 	"log"
+	"os"
 	"testing"
 
-	"github.com/gonum/matrix/mat64"
+	"gonum.org/v1/gonum/mat"
+
 	"github.com/gonum/plot"
 	"github.com/gonum/plot/internal/cmpimg"
 	"github.com/gonum/plot/palette"
+	"github.com/gonum/plot/vg"
 	"github.com/gonum/plot/vg/draw"
 	"github.com/gonum/plot/vg/recorder"
+	"github.com/gonum/plot/vg/vgimg"
 )
 
 type offsetUnitGrid struct {
 	XOffset, YOffset float64
 
-	Data mat64.Matrix
+	Data mat.Matrix
 }
 
 func (g offsetUnitGrid) Dims() (c, r int)   { r, c = g.Data.Dims(); return c, r }
@@ -43,12 +48,13 @@ func ExampleHeatMap() {
 	m := offsetUnitGrid{
 		XOffset: -2,
 		YOffset: -1,
-		Data: mat64.NewDense(3, 4, []float64{
+		Data: mat.NewDense(3, 4, []float64{
 			1, 2, 3, 4,
 			5, 6, 7, 8,
 			9, 10, 11, 12,
 		})}
-	h := NewHeatMap(m, palette.Heat(12, 1))
+	pal := palette.Heat(12, 1)
+	h := NewHeatMap(m, pal)
 
 	p, err := plot.New()
 	if err != nil {
@@ -58,13 +64,43 @@ func ExampleHeatMap() {
 
 	p.Add(h)
 
+	// Create a legend.
+	thumbs := PaletteThumbnailers(pal)
+	for i := len(thumbs) - 1; i >= 0; i-- {
+		t := thumbs[i]
+		if i != 0 && i != len(thumbs)-1 {
+			p.Legend.Add("", t)
+			continue
+		}
+		var val float64
+		switch i {
+		case 0:
+			val = h.Min
+		case len(thumbs) - 1:
+			val = h.Max
+		}
+		p.Legend.Add(fmt.Sprintf("%.2g", val), t)
+	}
+	// This is the width of the legend, experimentally determined.
+	const legendWidth = 1.25 * vg.Centimeter
+	// Slide the legend over so it doesn't overlap the HeatMap.
+	p.Legend.XOffs = legendWidth
+
 	p.X.Padding = 0
 	p.Y.Padding = 0
 	p.X.Max = 1.5
 	p.Y.Max = 1.5
 
-	err = p.Save(100, 100, "testdata/heatMap.png")
+	img := vgimg.New(250, 175)
+	dc := draw.New(img)
+	dc = draw.Crop(dc, 0, -legendWidth, 0, 0) // Make space for the legend.
+	p.Draw(dc)
+	w, err := os.Create("testdata/heatMap.png")
 	if err != nil {
+		log.Panic(err)
+	}
+	png := vgimg.PngCanvas{Canvas: img}
+	if _, err = png.WriteTo(w); err != nil {
 		log.Panic(err)
 	}
 }
@@ -77,7 +113,7 @@ func TestFlatHeat(t *testing.T) {
 	m := offsetUnitGrid{
 		XOffset: -2,
 		YOffset: -1,
-		Data:    mat64.NewDense(3, 4, nil),
+		Data:    mat.NewDense(3, 4, nil),
 	}
 	h := NewHeatMap(m, palette.Heat(12, 1))
 
