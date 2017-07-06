@@ -22,7 +22,7 @@ const (
 	FormatYear   string = "2006"
 )
 
-func transFormat2Unit(f string) string {
+func TransFormat2Unit(f string) string {
 	switch f {
 	case FormatSecond:
 		return "sec"
@@ -236,11 +236,11 @@ func (cc *CandleChart) DataRange() (xmin, xmax, ymin, ymax float64) {
 	return 0, float64(len(cc.candles)) * 1.3, cc.Min, cc.Max
 }
 
-type rawTicks struct{}
+type RawTicks struct{}
 
 // Ticks computes the default tick marks, but the labels
 // are printed as raw number not float fromat.
-func (rawTicks) Ticks(min, max float64) []plot.Tick {
+func (RawTicks) Ticks(min, max float64) []plot.Tick {
 	tks := plot.DefaultTicks{}.Ticks(min, max)
 	for i, t := range tks {
 		if t.Label == "" { // Skip minor ticks, they are fine.
