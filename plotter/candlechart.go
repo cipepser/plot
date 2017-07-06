@@ -5,6 +5,7 @@ import (
 	"image/color"
 	"math"
 	"strconv"
+	"time"
 
 	"github.com/gonum/plot"
 	"github.com/gonum/plot/vg"
@@ -249,4 +250,87 @@ func (rawTicks) Ticks(min, max float64) []plot.Tick {
 		tks[i].Label = strconv.FormatFloat(s, 'f', 0, 64)
 	}
 	return tks
+}
+
+// GetNofCandle calcurates how many candles contains
+// between start and end.
+func GetNofCandle(d time.Duration, bu BarUnit) (n int, err error) {
+	switch bu.Unit {
+	case FormatSecond:
+		return int(d.Seconds() / float64(bu.T)), nil
+	case FormatMinute:
+		return int(d.Minutes() / float64(bu.T)), nil
+	case FormatHour:
+		return int(d.Hours() / float64(bu.T)), nil
+	case FormatDay:
+		// TODO: for daily chart
+	case FormatMonth:
+		// TODO: for monthly chart
+	case FormatYear:
+		// TODO: for yearly chart
+	}
+
+	return 0, nil
+}
+
+// GetTimeDuration returns the time range for sql query and the label ts.
+func GetTimeDuration(s time.Time, n int, bu BarUnit) ([]string, []string) {
+	btw := make([]string, n)
+	ts := make([]string, n)
+
+	for i := 0; i < n; i++ {
+		var t time.Time
+
+		switch bu.Unit {
+		case FormatSecond:
+			t = s.Add(time.Second * time.Duration(i*bu.T))
+		case FormatMinute:
+			t = s.Add(time.Minute * time.Duration(i*bu.T))
+		case FormatHour:
+			t = s.Add(time.Hour * time.Duration(i*bu.T))
+		case FormatDay:
+			// TODO: for daily chart
+		case FormatMonth:
+			// TODO: for monthly chart
+		case FormatYear:
+			// TODO: for yearly chart
+		}
+
+		switch bu.Unit {
+		case FormatSecond:
+			if t.Second() < 10 {
+				ts[i] = "0"
+			}
+			ts[i] += strconv.Itoa(t.Second())
+		case FormatMinute:
+			if t.Minute() < 10 {
+				ts[i] = "0"
+			}
+			ts[i] += strconv.Itoa(t.Minute())
+		case FormatHour:
+			if t.Hour() < 10 {
+				ts[i] = "0"
+			}
+			ts[i] += strconv.Itoa(t.Hour())
+		case FormatDay:
+			// TODO: for daily chart
+		case FormatMonth:
+			// TODO: for monthly chart
+		case FormatYear:
+			// TODO: for yearly chart
+		}
+
+		btw[i] = t.String()
+
+		// TODO: the label of x-axis round nice number by ts[i] not i.
+		if i%5 != 0 || i == n-1 {
+			ts[i] = ""
+		}
+		if i == 0 {
+			ts[i] = t.Format(bu.Unit)
+		}
+
+	}
+	return btw, ts
+
 }
