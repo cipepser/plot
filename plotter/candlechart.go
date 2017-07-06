@@ -22,6 +22,7 @@ const (
 	FormatYear   string = "2006"
 )
 
+// TransFormat2Unit transforms time format f to sec, min, hrs, day, mon and yr.
 func TransFormat2Unit(f string) string {
 	switch f {
 	case FormatSecond:
