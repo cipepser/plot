@@ -6,8 +6,8 @@ import (
 	"strconv"
 
 	"github.com/cipepser/plot/plotter"
-	"github.com/gonum/plot"
-	"github.com/gonum/plot/vg"
+	"gonum.org/v1/plot"
+	"gonum.org/v1/plot/vg"
 )
 
 // MySinglePlot is a wrapper of Line of package plotter with slice of float64 x.
