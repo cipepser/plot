@@ -2,20 +2,16 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-/*
-Package plotutil contains a small number of utilites for creating
-plots.
-
-
-This package is under active development so portions of it may change.
-*/
-package plotutil
+// Package plotutil contains a small number of utilites for creating plots.
+//
+// This package is under active development so portions of it may change.
+package plotutil // import "gonum.org/v1/plot/plotutil"
 
 import (
 	"image/color"
 
-	"github.com/gonum/plot/vg"
-	"github.com/gonum/plot/vg/draw"
+	"gonum.org/v1/plot/vg"
+	"gonum.org/v1/plot/vg/draw"
 )
 
 // DefaultColors is a set of colors used by the Color function.

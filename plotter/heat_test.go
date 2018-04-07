@@ -7,18 +7,17 @@ package plotter
 import (
 	"fmt"
 	"log"
+	"math"
 	"os"
 	"testing"
 
 	"gonum.org/v1/gonum/mat"
-
-	"github.com/gonum/plot"
-	"github.com/gonum/plot/internal/cmpimg"
-	"github.com/gonum/plot/palette"
-	"github.com/gonum/plot/vg"
-	"github.com/gonum/plot/vg/draw"
-	"github.com/gonum/plot/vg/recorder"
-	"github.com/gonum/plot/vg/vgimg"
+	"gonum.org/v1/plot"
+	"gonum.org/v1/plot/internal/cmpimg"
+	"gonum.org/v1/plot/palette"
+	"gonum.org/v1/plot/vg"
+	"gonum.org/v1/plot/vg/draw"
+	"gonum.org/v1/plot/vg/vgimg"
 )
 
 type offsetUnitGrid struct {
@@ -44,6 +43,16 @@ func (g offsetUnitGrid) Y(r int) float64 {
 	return float64(r) + g.YOffset
 }
 
+type integerTicks struct{}
+
+func (integerTicks) Ticks(min, max float64) []plot.Tick {
+	var t []plot.Tick
+	for i := math.Trunc(min); i <= max; i++ {
+		t = append(t, plot.Tick{Value: i, Label: fmt.Sprint(i)})
+	}
+	return t
+}
+
 func ExampleHeatMap() {
 	m := offsetUnitGrid{
 		XOffset: -2,
@@ -61,6 +70,9 @@ func ExampleHeatMap() {
 		log.Panic(err)
 	}
 	p.Title.Text = "Heat map"
+
+	p.X.Tick.Marker = integerTicks{}
+	p.Y.Tick.Marker = integerTicks{}
 
 	p.Add(h)
 
@@ -107,34 +119,4 @@ func ExampleHeatMap() {
 
 func TestHeatMap(t *testing.T) {
 	cmpimg.CheckPlot(ExampleHeatMap, t, "heatMap.png")
-}
-
-func TestFlatHeat(t *testing.T) {
-	m := offsetUnitGrid{
-		XOffset: -2,
-		YOffset: -1,
-		Data:    mat.NewDense(3, 4, nil),
-	}
-	h := NewHeatMap(m, palette.Heat(12, 1))
-
-	p, err := plot.New()
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
-	}
-	p.Add(h)
-
-	func() {
-		defer func() {
-			r := recover()
-			if r == nil {
-				t.Error("expected panic for flat data")
-			}
-			const want = "heatmap: non-positive Z range"
-			if r != want {
-				t.Errorf("unexpected panic message: got:%q want:%q", r, want)
-			}
-		}()
-		c := draw.NewCanvas(new(recorder.Canvas), 72, 72)
-		p.Draw(c)
-	}()
 }

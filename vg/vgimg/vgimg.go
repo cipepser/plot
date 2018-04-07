@@ -5,7 +5,7 @@
 // Package vgimg implements the vg.Canvas interface using
 // draw2d (github.com/llgcode/draw2d)
 // as a backend to output raster images.
-package vgimg
+package vgimg // import "gonum.org/v1/plot/vg/vgimg"
 
 import (
 	"bufio"
@@ -16,13 +16,14 @@ import (
 	"image/jpeg"
 	"image/png"
 	"io"
+	"sync"
 
 	"golang.org/x/image/tiff"
 
 	"github.com/llgcode/draw2d"
 	"github.com/llgcode/draw2d/draw2dimg"
 
-	"github.com/gonum/plot/vg"
+	"gonum.org/v1/plot/vg"
 )
 
 // Canvas implements the vg.Canvas interface,
@@ -265,10 +266,12 @@ func (c *Canvas) FillString(font vg.Font, pt vg.Point, str string) {
 	defer c.gc.Restore()
 
 	data := draw2d.FontData{Name: font.Name()}
-	if !registeredFont[font.Name()] {
+	registeredFont.Lock()
+	if !registeredFont.m[font.Name()] {
 		draw2d.RegisterFont(data, font.Font())
-		registeredFont[font.Name()] = true
+		registeredFont.m[font.Name()] = true
 	}
+	registeredFont.Unlock()
 	c.gc.SetFontData(data)
 	c.gc.SetFontSize(font.Size.Points())
 	c.gc.Translate(pt.X.Dots(c.DPI()), pt.Y.Dots(c.DPI()))
@@ -297,11 +300,12 @@ func (c *Canvas) DrawImage(rect vg.Rectangle, img image.Image) {
 	c.gc.Restore()
 }
 
-var (
-	// RegisteredFont contains the set of font names
-	// that have already been registered with draw2d.
-	registeredFont = map[string]bool{}
-)
+// registeredFont contains the set of font names
+// that have already been registered with draw2d.
+var registeredFont = struct {
+	sync.Mutex
+	m map[string]bool
+}{m: map[string]bool{}}
 
 // WriterCounter implements the io.Writer interface, and counts
 // the total number of bytes written.

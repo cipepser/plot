@@ -1,11 +1,15 @@
-package gob
+// Copyright ©2017 The gonum Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
+package gob // import "gonum.org/v1/plot/gob"
 
 import (
 	"encoding/gob"
 	"image/color"
 
-	"github.com/gonum/plot"
-	"github.com/gonum/plot/plotter"
+	"gonum.org/v1/plot"
+	"gonum.org/v1/plot/plotter"
 )
 
 func init() {
@@ -25,7 +29,6 @@ func init() {
 	gob.Register(plotter.BarChart{})
 	gob.Register(plotter.Histogram{})
 	gob.Register(plotter.BoxPlot{})
-	gob.Register(plotter.Bubbles{})
 	gob.Register(plotter.YErrorBars{})
 	gob.Register(plotter.XErrorBars{})
 	gob.Register(plotter.Function{})

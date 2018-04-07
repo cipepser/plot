@@ -10,9 +10,9 @@ import (
 	"math/rand"
 	"testing"
 
-	"github.com/gonum/plot"
-	"github.com/gonum/plot/internal/cmpimg"
-	"github.com/gonum/plot/vg"
+	"gonum.org/v1/plot"
+	"gonum.org/v1/plot/internal/cmpimg"
+	"gonum.org/v1/plot/vg"
 )
 
 func ExampleBarChart() {
@@ -158,8 +158,7 @@ func ExampleBarChart() {
 	p.Legend.Add("C", barsC)
 	p.Legend.Add("D", barsD)
 	p.Legend.Top = true
-	p.NominalX("Zero", "One", "Two", "Three", "Four", "",
-		"Six", "Seven", "Eight", "Nine", "Ten")
+	p.NominalX("Zero", "One", "Two", "Three", "Four")
 
 	p.Add(NewGlyphBoxes())
 	err = p.Save(250, 250, "testdata/stackedBarChart.png")

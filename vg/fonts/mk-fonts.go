@@ -20,7 +20,7 @@ import (
 )
 
 const (
-	baseUrl   = "https://fedorahosted.org/releases/l/i/liberation-fonts/"
+	baseUrl   = "https://releases.pagure.org/liberation-fonts/"
 	fontsName = "liberation-fonts-ttf-2.00.1"
 )
 
@@ -88,7 +88,7 @@ func main() {
 }
 
 func getFontsDir() string {
-	dir := "github.com/gonum/plot/vg"
+	dir := "gonum.org/v1/plot/vg"
 	gopath := os.Getenv("GOPATH")
 	if gopath == "" {
 		log.Fatal("no GOPATH environment variable")

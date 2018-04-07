@@ -4,7 +4,7 @@
 
 // Package vgpdf implements the vg.Canvas interface
 // using gopdf (bitbucket.org/zombiezen/gopdf/pdf).
-package vgpdf
+package vgpdf // import "gonum.org/v1/plot/vg/vgpdf"
 
 import (
 	"bufio"
@@ -15,7 +15,8 @@ import (
 	"math"
 
 	"bitbucket.org/zombiezen/gopdf/pdf"
-	"github.com/gonum/plot/vg"
+
+	"gonum.org/v1/plot/vg"
 )
 
 // DPI is the nominal resolution of drawing in PDF.

@@ -2,17 +2,6 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// Package plot provides an API for setting up plots, and primitives for
-// drawing on plots.
-//
-// Plot is the basic type for creating a plot, setting the title, axis
-// labels, legend, tick marks, etc.  Types implementing the Plotter
-// interface can draw to the data area of a plot using the primitives
-// made available by this package.  Some standard implementations
-// of the Plotter interface can be found in the
-// github.com/gonum/plot/plotter package
-// which is documented here:
-// http://godoc.org/github.com/gonum/plot/plotter
 package plot
 
 import (
@@ -23,8 +12,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/gonum/plot/vg"
-	"github.com/gonum/plot/vg/draw"
+	"gonum.org/v1/plot/vg"
+	"gonum.org/v1/plot/vg/draw"
 )
 
 var (
@@ -66,9 +55,9 @@ type Plot struct {
 
 // Plotter is an interface that wraps the Plot method.
 // Some standard implementations of Plotter can be
-// found in the github.com/gonum/plot/plotter
+// found in the gonum.org/v1/plot/plotter
 // package, documented here:
-// http://godoc.org/github.com/gonum/plot/plotter
+// https://godoc.org/gonum.org/v1/plot/plotter
 type Plotter interface {
 	// Plot draws the data to a draw.Canvas.
 	Plot(draw.Canvas, *Plot)
@@ -166,8 +155,9 @@ func (p *Plot) Draw(c draw.Canvas) {
 	y := verticalAxis{p.Y}
 
 	ywidth := y.size()
-	x.draw(padX(p, draw.Crop(c, ywidth, 0, 0, 0)))
+
 	xheight := x.size()
+	x.draw(padX(p, draw.Crop(c, ywidth, 0, 0, 0)))
 	y.draw(padY(p, draw.Crop(c, 0, 0, xheight, 0)))
 
 	dataC := padY(p, padX(p, draw.Crop(c, ywidth, 0, xheight, 0)))
@@ -175,7 +165,7 @@ func (p *Plot) Draw(c draw.Canvas) {
 		data.Plot(dataC, p)
 	}
 
-	p.Legend.draw(draw.Crop(draw.Crop(c, ywidth, 0, 0, 0), 0, 0, xheight, 0))
+	p.Legend.draw(draw.Crop(c, ywidth, 0, xheight, 0))
 }
 
 // DataCanvas returns a new draw.Canvas that
@@ -190,7 +180,7 @@ func (p *Plot) DataCanvas(da draw.Canvas) draw.Canvas {
 	x := horizontalAxis{p.X}
 	p.Y.sanitizeRange()
 	y := verticalAxis{p.Y}
-	return padY(p, padX(p, draw.Crop(da, y.size(), x.size(), 0, 0)))
+	return padY(p, padX(p, draw.Crop(da, y.size(), 0, x.size(), 0)))
 }
 
 // DrawGlyphBoxes draws red outlines around the plot's

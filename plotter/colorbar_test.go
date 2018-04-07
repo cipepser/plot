@@ -5,12 +5,13 @@
 package plotter
 
 import (
+	"image/color"
 	"log"
 	"testing"
 
-	"github.com/gonum/plot"
-	"github.com/gonum/plot/internal/cmpimg"
-	"github.com/gonum/plot/palette/moreland"
+	"gonum.org/v1/plot"
+	"gonum.org/v1/plot/internal/cmpimg"
+	"gonum.org/v1/plot/palette/moreland"
 )
 
 func ExampleColorBar_horizontal() {
@@ -19,7 +20,8 @@ func ExampleColorBar_horizontal() {
 		log.Panic(err)
 	}
 	l := &ColorBar{ColorMap: moreland.ExtendedBlackBody()}
-	l.ColorMap.SetMax(1)
+	l.ColorMap.SetMin(0.5)
+	l.ColorMap.SetMax(1.5)
 	p.Add(l)
 	p.HideY()
 	p.X.Padding = 0
@@ -34,13 +36,43 @@ func TestColorBar_horizontal(t *testing.T) {
 	cmpimg.CheckPlot(ExampleColorBar_horizontal, t, "colorBarHorizontal.png")
 }
 
+// This example shows how to create a ColorBar on a log-transformed axis.
+func ExampleColorBar_horizontal_log() {
+	p, err := plot.New()
+	if err != nil {
+		log.Panic(err)
+	}
+	colorMap, err := moreland.NewLuminance([]color.Color{color.Black, color.White})
+	if err != nil {
+		log.Panic(err)
+	}
+	l := &ColorBar{ColorMap: colorMap}
+	l.ColorMap.SetMin(1)
+	l.ColorMap.SetMax(100)
+	p.Add(l)
+	p.HideY()
+	p.X.Padding = 0
+	p.Title.Text = "Title"
+	p.X.Scale = plot.LogScale{}
+	p.X.Tick.Marker = plot.LogTicks{}
+
+	if err = p.Save(300, 48, "testdata/colorBarHorizontalLog.png"); err != nil {
+		log.Panic(err)
+	}
+}
+
+func TestColorBar_horizontal_log(t *testing.T) {
+	cmpimg.CheckPlot(ExampleColorBar_horizontal_log, t, "colorBarHorizontalLog.png")
+}
+
 func ExampleColorBar_vertical() {
 	p, err := plot.New()
 	if err != nil {
 		log.Panic(err)
 	}
 	l := &ColorBar{ColorMap: moreland.ExtendedBlackBody()}
-	l.ColorMap.SetMax(1)
+	l.ColorMap.SetMin(0.5)
+	l.ColorMap.SetMax(1.5)
 	l.Vertical = true
 	p.Add(l)
 	p.HideX()

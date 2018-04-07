@@ -5,8 +5,8 @@
 package plot
 
 import (
-	"github.com/gonum/plot/vg"
-	"github.com/gonum/plot/vg/draw"
+	"gonum.org/v1/plot/vg"
+	"gonum.org/v1/plot/vg/draw"
 )
 
 // A Legend gives a description of the meaning of different
@@ -19,7 +19,7 @@ type Legend struct {
 	draw.TextStyle
 
 	// Padding is the amount of padding to add
-	// betweeneach entry of the legend.  If Padding
+	// between each entry in the legend.  If Padding
 	// is zero then entries are spaced based on the
 	// font size.
 	Padding vg.Length
